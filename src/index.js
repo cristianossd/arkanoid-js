@@ -16,10 +16,22 @@ function checkKey(evt) {
 
 function moveBarRight() {
   console.log('Moving to right');
+  var bar = scene.getObjectByName('bar');
+
+  if (bar.position.x <= 0.7) {
+    bar.position.x += 0.1;
+    renderScene();
+  }
 }
 
 function moveBarLeft() {
   console.log('Moving to left');
+  var bar = scene.getObjectByName('bar');
+
+  if (bar.position.x >= -0.7) {
+    bar.position.x -= 0.1;
+    renderScene();
+  }
 }
 
 function renderScene() {
@@ -37,15 +49,16 @@ function init() {
   camera = new THREE.OrthographicCamera(-1.0, 1.0, -2.0, 2.0, -1.0, 1.0);
   scene.add(camera);
 
-  var squareGeometry = new THREE.BoxGeometry(0.4, 0.1, 0);
-  var squareMaterial = new THREE.MeshBasicMaterial({color: 0xF0F201});
-  var square = new THREE.Mesh(squareGeometry, squareMaterial);
+  var barGeometry = new THREE.BoxGeometry(0.4, 0.1, 0);
+  var barMaterial = new THREE.MeshBasicMaterial({color: 0xF0F201});
+  var bar = new THREE.Mesh(barGeometry, barMaterial);
 
-  square.position.x = 0;
-  square.position.y = 1.7;
-  square.position.z = 0;
+  bar.name = 'bar';
+  bar.position.x = 0;
+  bar.position.y = 1.7;
+  bar.position.z = 0;
 
-  scene.add(square);
+  scene.add(bar);
 
   // axis helper
   var globalAxis = new THREE.AxisHelper(1.0);
