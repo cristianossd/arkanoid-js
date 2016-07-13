@@ -1,13 +1,12 @@
 'use strict';
 
 var stage = 0;
-var ballStep = 0;
+var ballStep = {x: 0, y: 0};
 var scene;
 var renderer;
 var camera;
 
 function checkKey(evt) {
-  evt.preventDefault();
   const key = evt.key;
 
   if (key == 'ArrowRight')
@@ -21,7 +20,6 @@ function moveBarRight() {
 
   if (bar.position.x <= 1.6) {
     bar.position.x += 0.1;
-    renderScene();
   }
 }
 
@@ -30,7 +28,6 @@ function moveBarLeft() {
 
   if (bar.position.x >= -1.6) {
     bar.position.x -= 0.1;
-    renderScene();
   }
 }
 
@@ -51,14 +48,35 @@ function buildLineBoxes(index, colors) {
   }
 }
 
+function checkBarCollision() {
+  var ball = scene.getObjectByName('ball');
+  var bar = scene.getObjectByName('bar');
+  var barLimits = {
+    left: bar.position.x - 0.4,
+    right: bar.position.y + 0.4
+  };
+
+  var currentPos = ball.position.x;
+  if (currentPos >= barLimits.left && currentPos <= barLimits.right) {
+    console.log('Touched the bar');
+    var newX = (currentPos - bar.position.x) * 10;
+    ballStep.x = newX * 0.01;
+  }
+}
+
 function renderScene() {
   var ball = scene.getObjectByName('ball');
 
+  if (ball.position.y == 1.7)
+    checkBarCollision();
+
   if (ball.position.y >= 1.7)
-    ballStep = -0.05;
+    ballStep.y = -0.05;
   if (ball.position.y <= -1.4)
-    ballStep = 0.05;
-  ball.position.y += ballStep;
+    ballStep.y = 0.05;
+
+  ball.position.x += ballStep.x;
+  ball.position.y += ballStep.y;
 
   requestAnimationFrame(renderScene);
   renderer.render(scene, camera);
