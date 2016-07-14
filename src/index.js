@@ -5,6 +5,7 @@ var ballStep = {x: 0, y: 0};
 var scene;
 var renderer;
 var camera;
+var rounds = 3;
 
 function checkKey(evt) {
   const key = evt.key;
@@ -53,27 +54,54 @@ function checkBarCollision() {
   var bar = scene.getObjectByName('bar');
   var barLimits = {
     left: bar.position.x - 0.4,
-    right: bar.position.y + 0.4
+    right: bar.position.x + 0.4
   };
 
   var currentPos = ball.position.x;
   if (currentPos >= barLimits.left && currentPos <= barLimits.right) {
-    console.log('Touched the bar');
-    var newX = (currentPos - bar.position.x) * 10;
-    ballStep.x = newX * 0.01;
+    var newX = (currentPos - bar.position.x) * 5;
+    ballStep.x = newX * 0.005;
+    ballStep.y = -0.03;
   }
+}
+
+function loseRound() {
+  rounds--;
+  var roundNumber = document.getElementById('roundNumber');
+  if (rounds < 1) {
+    roundNumber.innerHTML = 'You lose';
+    document.getElementById('output').innerHTML = '';
+  } else {
+    roundNumber.innerHTML = 'Life: ' + rounds.toString();
+  }
+
+  var bar = scene.getObjectByName('bar');
+  bar.position.x = 0;
+  bar.position.y = 1.8;
+
+  var ball = scene.getObjectByName('ball');
+  ball.position.x = 0;
+  ball.position.y = 1.7;
+
+  ballStep.x = 0;
+  ballStep.y = 0;
 }
 
 function renderScene() {
   var ball = scene.getObjectByName('ball');
 
-  if (ball.position.y == 1.7)
-    checkBarCollision();
+  // X axis checkers
+  if ((ball.position.x >= -2.0 && ball.position.x < -1.95) ||
+      (ball.position.x <= 2.0 && ball.position.x > 1.95))
+    ballStep.x = -ballStep.x;
 
-  if (ball.position.y >= 1.7)
-    ballStep.y = -0.05;
-  if (ball.position.y <= -1.4)
-    ballStep.y = 0.05;
+  // Y axis checkers
+  if (ball.position.y >= 1.7 && ball.position.y <= 1.8)
+    checkBarCollision();
+  if (ball.position.y > 1.8)
+    loseRound();
+  if (ball.position.y <= -2)
+    ballStep.y = 0.03;
 
   ball.position.x += ballStep.x;
   ball.position.y += ballStep.y;
@@ -128,7 +156,7 @@ function init() {
   scene.add(globalAxis);
 
   document.getElementById('output').appendChild(renderer.domElement);
-  window.addEventListener('keypress', checkKey);
+  document.addEventListener('keypress', checkKey);
 
   renderScene();
 }
