@@ -6,6 +6,12 @@ var scene;
 var renderer;
 var camera;
 var rounds = 3;
+var qtObjects = 0;
+var pallete = [
+  [0xF2DC00, 0x00CADB, 0xCC0000, 0x009C0B, 0x725000],
+  [0x9EDF60, 0x42A2C7, 0xF4DBDB, 0x26418B, 0x020922],
+  [0xFF4ADC, 0xDFB14F, 0xEFF17A, 0x78CB6D, 0x18F7FF],
+];
 
 function checkKey(evt) {
   const key = evt.key;
@@ -42,10 +48,11 @@ function buildLineBoxes(index, colors) {
     var box = new THREE.Mesh(boxGeometry, boxMaterial);
 
     box.position.x = nextX;
-    box.position.y = -1.4 + (-0.2 * index);
+    box.position.y = -1.4 + (-0.1 * index);
     box.name = 'box' + box.position.x.toString() + ',' + box.position.y.toString();
 
     scene.add(box);
+    qtObjects++;
     nextX += 0.4;
   }
 }
@@ -76,16 +83,7 @@ function loseRound() {
     roundNumber.innerHTML = 'Life: ' + rounds.toString();
   }
 
-  var bar = scene.getObjectByName('bar');
-  bar.position.x = 0;
-  bar.position.y = 1.8;
-
-  var ball = scene.getObjectByName('ball');
-  ball.position.x = 0;
-  ball.position.y = 1.7;
-
-  ballStep.x = 0;
-  ballStep.y = 0;
+  resetScene();
 }
 
 function removeObj(name) {
@@ -94,6 +92,7 @@ function removeObj(name) {
 
   scene.remove(scene.getObjectByName(name));
   ballStep.y = -ballStep.y;
+  qtObjects--;
 }
 
 function checkLineCollision(line, ballX) {
@@ -109,41 +108,66 @@ function checkLineCollision(line, ballX) {
   }
 }
 
+function resetScene() {
+  var bar = scene.getObjectByName('bar');
+  bar.position.x = 0;
+  bar.position.y = 1.8;
+
+  var ball = scene.getObjectByName('ball');
+  ball.position.x = 0;
+  ball.position.y = 1.7;
+
+  ballStep.x = 0;
+  ballStep.y = 0;
+}
+
 function renderScene() {
   var ball = scene.getObjectByName('ball');
 
-  // X axis checkers
-  if ((ball.position.x >= -2.0 && ball.position.x < -1.95) ||
-      (ball.position.x <= 2.0 && ball.position.x > 1.95))
-    ballStep.x = -ballStep.x;
+  if (qtObjects > 0) {
+    // X axis checkers
+    if ((ball.position.x >= -2.0 && ball.position.x < -1.95) ||
+        (ball.position.x <= 2.0 && ball.position.x > 1.95))
+      ballStep.x = -ballStep.x;
 
-  // Y axis checkers
-  if (ball.position.y >= 1.7 && ball.position.y <= 1.8)
-    checkBarCollision();
-  if (ball.position.y > 1.8)
-    loseRound();
-  if (ball.position.y <= -2)
-    ballStep.y = 0.03;
+    // Y axis checkers
+    if (ball.position.y >= 1.7 && ball.position.y <= 1.8)
+      checkBarCollision();
+    if (ball.position.y > 1.8)
+      loseRound();
+    if (ball.position.y <= -2)
+      ballStep.y = 0.03;
 
-  // Line boxes collision
-  if (ball.position.y <= -1.4 && ball.position.y >= -1.43) {
-    checkLineCollision(-1.4, ball.position.x);
+    // Line boxes collision
+    if (ball.position.y <= -1.4 && ball.position.y >= -1.43)
+      checkLineCollision(-1.4, ball.position.x);
+
+    if (stage == 1 && (ball.position.y <= -1.5 && ball.position.y >= -1.53))
+      checkLineCollision(-1.5, ball.position.x);
+
+    if (stage > 0 && (ball.position.y <= -1.6 && ball.position.y >= -1.63))
+      checkLineCollision(-1.6, ball.position.x);
+
+    ball.position.x += ballStep.x;
+    ball.position.y += ballStep.y;
+  } else {
+    stage++;
+
+    if (stage == 3) {
+      // finish the game
+      console.log('You win');
+    } else {
+      resetScene();
+      for (var i=0; i<=stage; i++)
+        buildLineBoxes(i, pallete[i]);
+    }
   }
-
-  ball.position.x += ballStep.x;
-  ball.position.y += ballStep.y;
 
   requestAnimationFrame(renderScene);
   renderer.render(scene, camera);
 }
 
 function init() {
-  var pallete = [
-    [0xF2DC00, 0x00CADB, 0xCC0000, 0x009C0B, 0x725000],
-    [0x9EDF60, 0x42A2C7, 0xF4DBDB, 0x26418B, 0x020922],
-    [0xFF4ADC, 0xDFB14F, 0xEFF17A, 0x78CB6D, 0x18F7FF],
-  ];
-
   scene = new THREE.Scene();
   renderer = new THREE.WebGLRenderer();
 
@@ -164,8 +188,7 @@ function init() {
 
   scene.add(bar);
 
-  for (var i=0; i<=stage; i++)
-    buildLineBoxes(i, pallete[i]);
+  buildLineBoxes(stage, pallete[stage]);
 
   var ballGeometry = new THREE.SphereGeometry(0.05, 50, 50);
   var ballMaterial = new THREE.MeshBasicMaterial({color: 0xFFFFFF});
