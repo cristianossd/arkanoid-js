@@ -89,7 +89,11 @@ function loseRound() {
 }
 
 function removeObj(name) {
+  if (scene.getObjectByName(name) === undefined)
+    return;
+
   scene.remove(scene.getObjectByName(name));
+  ballStep.y = -ballStep.y;
 }
 
 function checkLineCollision(line, ballX) {
