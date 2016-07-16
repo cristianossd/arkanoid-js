@@ -43,6 +43,7 @@ function buildLineBoxes(index, colors) {
 
     box.position.x = nextX;
     box.position.y = -1.4 + (-0.2 * index);
+    box.name = 'box' + box.position.x.toString() + ',' + box.position.y.toString();
 
     scene.add(box);
     nextX += 0.4;
@@ -87,6 +88,23 @@ function loseRound() {
   ballStep.y = 0;
 }
 
+function removeObj(name) {
+  scene.remove(scene.getObjectByName(name));
+}
+
+function checkLineCollision(line, ballX) {
+  var posX = -1.8;
+
+  for (var i=0; i<10; i++) {
+    if (ballX >= posX - 0.2 && ballX <= posX + 0.2) {
+      var boxName = 'box' + posX.toString() + ',' + line.toString();
+      removeObj(boxName);
+    }
+
+    posX += 0.4;
+  }
+}
+
 function renderScene() {
   var ball = scene.getObjectByName('ball');
 
@@ -102,6 +120,11 @@ function renderScene() {
     loseRound();
   if (ball.position.y <= -2)
     ballStep.y = 0.03;
+
+  // Line boxes collision
+  if (ball.position.y <= -1.4 && ball.position.y >= -1.43) {
+    checkLineCollision(-1.4, ball.position.x);
+  }
 
   ball.position.x += ballStep.x;
   ball.position.y += ballStep.y;
