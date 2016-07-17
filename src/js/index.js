@@ -165,7 +165,7 @@ function renderScene() {
   } else {
     stage++;
 
-    if (stage > 3) {
+    if (stage > 2) {
       // finish the game
       setNotification('Congrats, winner! :D');
     } else {
