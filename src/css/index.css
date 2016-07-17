@@ -1,0 +1,47 @@
+body {
+  position: relative;
+  min-height: 90vh;
+}
+
+.panel {
+  background-color: #E7E7E7;
+}
+
+.notification {
+  text-align: center;
+  padding: 10px;
+  background-color: #D2D7D3;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.health {
+  text-align: center;
+  padding: 20px 10px;
+}
+
+.health img {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.progress {
+  margin: 0px;
+  padding: 0px;
+  border: 2px solid #888888;
+}
+
+.progress .stage {
+  display: block;
+  width: 33.3%;
+  height: 15px;
+  background-color: #92F22A;
+}
+
+.icons-rights {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  font-size: 10px;
+}
