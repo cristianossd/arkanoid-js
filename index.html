@@ -3,15 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <title>ArkanoidJs</title>
+  <link rel="stylesheet" href="src/css/index.css">
 
   <script src="libs/three.min.js"></script>
 </head>
 <body>
   <div id="output"></div>
-  <div id="roundNumber" class="">
-    Life: 3
+
+  <div id="panel" class="panel">
+    <div id="notification" class="notification"></div>
+
+    <div class="health">
+      <img id="heart3" src="src/imgs/heart.png" alt="">
+      <img id="heart2" src="src/imgs/heart.png" alt="">
+      <img id="heart1" src="src/imgs/heart.png" alt="">
+    </div>
+
+    <div class="progress">
+      <div id="stage" class="stage"></div>
+    </div>
   </div>
 
-  <script src="src/index.js"></script>
+  <div class="icons-rights">
+    Icons made by <a href="http://www.flaticon.com/authors/madebyoliver" title="Madebyoliver">Madebyoliver</a> and
+    <a href="http://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a>
+    from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a>
+    is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a>
+  </div>
+
+  <script src="src/js/index.js"></script>
 </body>
 </html>

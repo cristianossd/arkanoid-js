@@ -1,6 +1,7 @@
 'use strict';
 
 var stage = 0;
+var stageLines = [-1.4, -1.5, -1.6];
 var ballStep = {x: 0, y: 0};
 var scene;
 var renderer;
@@ -48,7 +49,7 @@ function buildLineBoxes(index, colors) {
     var box = new THREE.Mesh(boxGeometry, boxMaterial);
 
     box.position.x = nextX;
-    box.position.y = -1.4 + (-0.1 * index);
+    box.position.y = stageLines[index];
     box.name = 'box' + box.position.x.toString() + ',' + box.position.y.toString();
 
     scene.add(box);
@@ -75,24 +76,31 @@ function checkBarCollision() {
 
 function loseRound() {
   rounds--;
+  hideHearts(rounds);
+
   var roundNumber = document.getElementById('roundNumber');
+
   if (rounds < 1) {
-    roundNumber.innerHTML = 'You lose';
-    document.getElementById('output').innerHTML = '';
+    qtObjects = 0;
+    stage = -1;
   } else {
-    roundNumber.innerHTML = 'Life: ' + rounds.toString();
+    setNotification('You lost a heart');
   }
 
   resetScene();
 }
 
 function removeObj(name) {
-  if (scene.getObjectByName(name) === undefined)
-    return;
+  if (scene.getObjectByName(name) === undefined) return;
 
   scene.remove(scene.getObjectByName(name));
   ballStep.y = -ballStep.y;
   qtObjects--;
+
+  setNotification('Nice! You destroyed a block');
+  setTimeout(() => {
+    setNotification('Keep going, destroy the rest');
+  }, 1000);
 }
 
 function checkLineCollision(line, ballX) {
@@ -142,24 +150,32 @@ function renderScene() {
     if (ball.position.y <= -1.4 && ball.position.y >= -1.43)
       checkLineCollision(-1.4, ball.position.x);
 
-    if (stage == 1 && (ball.position.y <= -1.5 && ball.position.y >= -1.53))
+    if (stage > 0 && (ball.position.y <= -1.5 && ball.position.y >= -1.53))
       checkLineCollision(-1.5, ball.position.x);
 
-    if (stage > 0 && (ball.position.y <= -1.6 && ball.position.y >= -1.63))
+    if (stage > 1 && (ball.position.y <= -1.6 && ball.position.y >= -1.63))
       checkLineCollision(-1.6, ball.position.x);
 
     ball.position.x += ballStep.x;
     ball.position.y += ballStep.y;
+  } else if (stage < 0) {
+    setNotification('You lose! :(');
+    ballStep.x = 0;
+    ballStep.y = 0;
   } else {
     stage++;
 
-    if (stage == 3) {
+    if (stage > 3) {
       // finish the game
-      console.log('You win');
+      setNotification('Congrats, winner! :D');
     } else {
       resetScene();
-      for (var i=0; i<=stage; i++)
+      setNotification('Good job, you have new blocks!');
+
+      for (var i=0; i<=stage; i++) {
         buildLineBoxes(i, pallete[i]);
+        increaseProgress(stage + 1);
+      }
     }
   }
 
@@ -201,14 +217,45 @@ function init() {
 
   scene.add(ball);
 
-  // axis helper
-  var globalAxis = new THREE.AxisHelper(1.0);
-  scene.add(globalAxis);
-
   document.getElementById('output').appendChild(renderer.domElement);
   document.addEventListener('keypress', checkKey);
 
   renderScene();
+  setPanelWidth();
+  setNotification('The game was started');
+  setTimeout(() => {
+    setNotification('Destroy the blocks');
+  }, 1000);
+}
+
+// frontend functions
+function setPanelWidth() {
+  var canvas = document.getElementsByTagName('canvas')[0];
+  var panel = document.getElementById('panel');
+
+  panel.style.width = canvas.clientWidth.toString() + 'px';
+}
+
+function setNotification(msg) {
+  var notification = document.getElementById('notification');
+  notification.innerHTML = msg;
+}
+
+function hideHearts(n) {
+  var toHide = 3-n;
+  var heart = '';
+
+  for (var i=1; i<=toHide; i++) {
+    heart = document.getElementById('heart' + i);
+    heart.src = 'src/imgs/heart-o.png';
+  }
+}
+
+function increaseProgress(n) {
+  var progressBar = document.getElementById('stage');
+  var number = 33.3 * n;
+
+  progressBar.style.width = number.toString() + '%';
 }
 
 window.onload = init;
