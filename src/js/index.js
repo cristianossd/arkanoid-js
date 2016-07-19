@@ -16,10 +16,11 @@ var pallete = [
 
 function checkKey(evt) {
   const key = evt.key;
+  const keyCode = evt.keyCode;
 
-  if (key == 'ArrowRight')
+  if (key == 'ArrowRight' || keyCode == 39)
     moveBarRight();
-  else if (key == 'ArrowLeft')
+  else if (key == 'ArrowLeft' || keyCode == 37)
     moveBarLeft();
 }
 
