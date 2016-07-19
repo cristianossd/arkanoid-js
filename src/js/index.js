@@ -219,7 +219,7 @@ function init() {
   scene.add(ball);
 
   document.getElementById('output').appendChild(renderer.domElement);
-  document.addEventListener('keypress', checkKey);
+  document.addEventListener('keydown', checkKey);
 
   renderScene();
   setPanelWidth();
