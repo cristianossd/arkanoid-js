@@ -45,3 +45,10 @@ body {
   right: 0;
   font-size: 10px;
 }
+
+.github-fork {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: 0;
+}
